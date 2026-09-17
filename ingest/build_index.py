@@ -117,15 +117,18 @@ def _split_glossary(chunk):
     return out or [chunk]
 
 
-def _split_bullets(chunk):
-    """Exclusions are independent rules. One chunk each."""
+def _split_bullets(chunk, group=5):
+    """Exclusions are independent rules, but one bullet per chunk makes
+    them too short to compete. A six word fragment scores highly on
+    partial matches and displaces the longer section that actually
+    answers the question. Grouping restores a comparable chunk length."""
     parts = re.split(r"(?:^|\s)[\u2022\-\u2013]\s+", chunk["text"])
+    parts = [p.strip() for p in parts if len(p.strip().split()) > 5]
     out = []
-    for p in parts:
-        p = p.strip()
-        if len(p.split()) > 5:
-            out.append({**chunk, "text": p,
-                        "embed_text": f"{chunk['section']}: {p}"})
+    for i in range(0, len(parts), group):
+        body = ". ".join(parts[i:i + group])
+        out.append({**chunk, "text": body,
+                    "embed_text": f"{chunk['section']}: {body}"})
     return out or [chunk]
 
 
