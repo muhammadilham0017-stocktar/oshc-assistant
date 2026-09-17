@@ -1,0 +1,7 @@
+streamlit>=1.40
+fastembed>=0.8
+rank-bm25>=0.2.2
+textstat>=0.7
+pdfplumber>=0.11
+numpy>=1.26
+openai>=1.40

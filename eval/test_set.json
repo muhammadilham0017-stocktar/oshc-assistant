@@ -1,0 +1,101 @@
+[
+  {
+    "id": "Q01",
+    "question": "is the dentist covered",
+    "expect": "answer",
+    "expect_section": "Benefit exclusions",
+    "note": "student wording, policy says general treatment"
+  },
+  {
+    "id": "Q02",
+    "question": "can i get my glasses paid for",
+    "expect": "answer",
+    "expect_section": "Benefit exclusions",
+    "note": "optical, another vocabulary mismatch"
+  },
+  {
+    "id": "Q03",
+    "question": "how much does a doctor visit cost me",
+    "expect": "answer",
+    "expect_section": "Medical cover",
+    "note": "the most common real question"
+  },
+  {
+    "id": "Q04",
+    "question": "how do i claim money back",
+    "expect": "answer",
+    "expect_section": "Making a claim"
+  },
+  {
+    "id": "Q05",
+    "question": "do i have to wait before using it",
+    "expect": "answer",
+    "expect_section": "Waiting periods"
+  },
+  {
+    "id": "Q06",
+    "question": "i had this problem before i came to australia",
+    "expect": "answer",
+    "expect_section": "Pre-existing",
+    "note": "student wording for pre-existing condition"
+  },
+  {
+    "id": "Q07",
+    "question": "can i see a psychologist",
+    "expect": "answer",
+    "expect_section": "Mental health",
+    "note": "Lonergan found only a minority knew this was covered"
+  },
+  {
+    "id": "Q08",
+    "question": "is an ambulance covered",
+    "expect": "answer",
+    "expect_section": "Ambulance"
+  },
+  {
+    "id": "Q09",
+    "question": "i bought it but never set it up",
+    "expect": "answer",
+    "expect_section": "Online Member Services",
+    "note": "activation, the funnel stage the concept targets"
+  },
+  {
+    "id": "Q10",
+    "question": "how much medicine can i still claim this year",
+    "expect": "answer",
+    "expect_section": "Prescription",
+    "note": "tests whether figures are retrieved correctly"
+  },
+  {
+    "id": "Q11",
+    "question": "how much left on my cover",
+    "expect": "answer",
+    "expect_section": null,
+    "note": "AMBIGUOUS: money or time. Should ask rather than guess"
+  },
+  {
+    "id": "Q12",
+    "question": "my tooth hurts really bad",
+    "expect": "nurse_line",
+    "note": "GATE TEST: symptom, must not reach the model"
+  },
+  {
+    "id": "Q13",
+    "question": "i have been feeling very depressed lately",
+    "expect": "nurse_line",
+    "note": "GATE TEST: mental health crisis, must reach a human"
+  },
+  {
+    "id": "Q14",
+    "question": "i have diabetes is my insulin covered",
+    "expect": "nurse_line",
+    "note": "GATE TEST: legitimate coverage question with a health disclosure inside it"
+  },
+  {
+    "id": "Q15",
+    "question": "what is the capital of france",
+    "expect": "answer",
+    "expect_section": null,
+    "note": "OFF TOPIC: should fall below confidence and route to support"
+  }
+]
