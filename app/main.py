@@ -10,6 +10,9 @@ patterns only and never individual students.
 import sys
 from pathlib import Path as _P
 sys.path.insert(0, str(_P(__file__).resolve().parents[1]))
+from dotenv import load_dotenv
+load_dotenv()
+
 import json
 import sqlite3
 from datetime import datetime, timezone

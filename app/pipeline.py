@@ -29,6 +29,29 @@ CLINICAL = [
     "pregnant", "pregnancy test", "std", "sti", "contracept",
     "medication", "medicine i take", "my prescription", "insulin",
     "asthma", "diabetes", "epilep", "cancer",
+    "toothache", "headache", "backache", "stomachache", "earache",
+    "sore throat", "食欲", "不舒服",
+    # Indonesian and Malay
+    "sakit", "nyeri", "demam", "batuk", "muntah", "luka", "gigi sakit",
+    "pusing", "sesak", "hamil", "depresi", "cemas",
+    # Chinese
+    "\u75bc", "\u75db", "\u53d1\u70e7", "\u54b3\u55fd", "\u5417\u5410",
+    "\u53d7\u4f24", "\u6000\u5b55", "\u6291\u90c1", "\u7126\u8651",
+    # Vietnamese
+    "\u0111au", "s\u1ed1t", "ho", "n\u00f4n", "ch\u1ea5n th\u01b0\u01a1ng",
+    # Hindi and Nepali romanised
+    "dard", "bukhar", "khansi",
+]
+
+# Words that mark a question about the policy rather than a report
+# about the person. "my tooth hurts" is a symptom. "is toothache
+# covered" is a coverage question that happens to name a symptom.
+COVERAGE_INTENT = [
+    "cover", "covered", "coverage", "claim", "benefit", "pay", "cost",
+    "price", "limit", "included", "exclude", "excluded", "policy",
+    "tercover", "ditanggung", "biaya", "klaim",
+    "\u4fdd\u9669", "\u62a5\u9500", "\u8d39\u7528",
+    "b\u1ea3o hi\u1ec3m", "chi ph\u00ed",
 ]
 
 NURSE_LINE = "1800 887 283"
@@ -43,7 +66,30 @@ GATE_RESPONSE = (
 def safety_gate(question):
     """Returns (blocked, reason). Runs first, before anything else."""
     q = question.lower()
+
+    # A coverage question naming a symptom is not a symptom report.
+    # Deliberately narrow: first person phrasing still routes to a
+    # human even when coverage words are present.
+    first_person = any(p in q for p in
+                       ["i have", "i feel", "my ", "saya ", "i am", "im ",
+                        "\u6211", "t\u00f4i"])
+    # First person disclosure always wins. A student who says they
+    # have a symptom has disclosed health information, whether or not
+    # they also asked about cover.
+    if first_person:
+        for w in CLINICAL:
+            if (w in q) if not w.isascii() else re.search(rf"\b{re.escape(w)}\b", q):
+                return True, w
+    if any(c in q for c in COVERAGE_INTENT):
+        return False, None
+
     for w in CLINICAL:
+        # Word boundaries do not apply to scripts without spaces,
+        # so CJK terms are matched as substrings.
+        if not w.isascii():
+            if w in q:
+                return True, w
+            continue
         if re.search(rf"\b{re.escape(w)}\b", q):
             return True, w
     return False, None
@@ -97,7 +143,7 @@ class Retriever:
     def _embed_query(self, q):
         if self._embedder is None:
             from fastembed import TextEmbedding
-            self._embedder = TextEmbedding("BAAI/bge-small-en-v1.5")
+            self._embedder = TextEmbedding("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
         return np.array(list(self._embedder.embed([q]))[0])
 
     def search(self, question, product, k=3, pool=20, expand_query=True):

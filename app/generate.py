@@ -9,6 +9,8 @@ the human approved answer for the matched topic, which is also what
 happens if generation fails on the day.
 """
 import os
+from dotenv import load_dotenv
+load_dotenv()
 import re
 
 from app.pipeline import numbers_supported, readable, NURSE_LINE

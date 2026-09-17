@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np
 from fastembed import TextEmbedding
 
-MODEL = "BAAI/bge-small-en-v1.5"
+MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 
 def main():
