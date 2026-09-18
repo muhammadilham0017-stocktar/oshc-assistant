@@ -1,10 +1,22 @@
 {
-  "Benefit exclusions": "Regular dental check-ups, glasses and physiotherapy are not covered. You pay for those yourself. Dental surgery in hospital is different and part of that is covered.",
-  "Medical cover": "At a Direct Billing doctor you usually pay nothing at the time. At other doctors you pay the full amount and claim part of it back. Find a Direct Billing doctor in the app before you book.",
-  "Waiting periods": "Most things you can use straight away. Doctor visits, medicines, ambulance and mental health have no wait. If you already had signs of a health problem before your cover started, you may wait 12 months.",
-  "Making a claim": "Claim in the app or in Online Member Services. You need the itemised receipt from the provider.",
-  "Ambulance services": "Emergency ambulance is covered anywhere in Australia. There is no limit. You do not have to wait.",
-  "Mental health support": "Yes. We pay towards each psychology and counselling session, up to an annual limit. The free 24 hour line can also connect you to someone now.",
-  "Activating your cover": "Sign up for Online Member Services at medibankoshc.com.au. It takes about two minutes. Benefits cannot be paid until you have arrived in Australia and activated your cover.",
-  "Prescription medicines": "You pay a set amount per prescription and we cover the rest, up to an annual limit. Your remaining balance is on the home screen."
+  "comprehensive": {
+    "Benefit exclusions": "Regular dental check-ups, glasses and physiotherapy are not covered. You pay for those yourself. Dental surgery in hospital is different and part of that is covered.",
+    "Medical cover": "At a Direct Billing doctor you usually pay nothing at the time. At other doctors you pay the full amount and claim part of it back. Find a Direct Billing doctor in the app before you book.",
+    "Waiting periods": "Most things you can use straight away. Doctor visits, medicines, ambulance and mental health have no wait. If you already had signs of a health problem before your cover started, you may wait 12 months.",
+    "Making a claim": "Claim in the app or in Online Member Services. You need the itemised receipt from the provider.",
+    "Ambulance services": "Emergency ambulance is covered anywhere in Australia. There is no limit. You do not have to wait.",
+    "Mental health support": "Yes. We pay towards each psychology and counselling session, up to an annual limit. The free 24 hour line can also connect you to someone now.",
+    "Activating your cover": "Sign up for Online Member Services at medibankoshc.com.au. It takes about two minutes. Benefits cannot be paid until you have arrived in Australia and activated your cover.",
+    "Prescription medicines": "You pay a set amount per prescription and we cover the rest, up to an annual limit. Your remaining balance is on the home screen."
+  },
+  "essentials": {
+    "Benefit exclusions": "Regular dental check-ups, glasses and physiotherapy are not covered. You pay for those yourself. Dental surgery in hospital is different and part of that is covered.",
+    "Medical cover": "At a Direct Billing doctor you usually pay nothing at the time. At other doctors you pay the full amount and claim part of it back. Find a Direct Billing doctor in the app before you book.",
+    "Waiting periods": "Most things you can use straight away. Doctor visits, medicines, ambulance and mental health have no wait. If you already had signs of a health problem before your cover started, you may wait 12 months.",
+    "Making a claim": "Claim in the app or in Online Member Services. You need the itemised receipt from the provider.",
+    "Ambulance services": "Emergency ambulance is covered anywhere in Australia. There is no limit. You do not have to wait.",
+    "Mental health support": "Essentials cover does not include benefits towards psychology or counselling sessions. Hospital psychiatric treatment is covered. The free 24 hour line can still connect you to someone now.",
+    "Activating your cover": "Sign up for Online Member Services at medibankoshc.com.au. It takes about two minutes. Benefits cannot be paid until you have arrived in Australia and activated your cover.",
+    "Prescription medicines": "You pay a set amount per prescription and we cover the rest, up to an annual limit. Your remaining balance is on the home screen."
+  }
 }

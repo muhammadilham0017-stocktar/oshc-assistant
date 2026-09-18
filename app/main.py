@@ -92,7 +92,10 @@ def ask(question, product, page_name):
         log("unmatched", confidence, page_name, "below_threshold")
         return
     topic = passages[0]["section"]
-    approved = load_approved().get(topic)
+    # Fallback answers must be product specific. Keying on topic
+    # alone would give an Essentials member the Comprehensive answer
+    # whenever generation fails.
+    approved = load_approved().get(product, {}).get(topic)
 
     member = {"product": product.title(),
               "campus": st.session_state.get("campus"),

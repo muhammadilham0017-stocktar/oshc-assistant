@@ -32,6 +32,18 @@ SYNONYMS = {
     "refund": "claim benefit reimburse",
     "money back": "claim benefit reimburse submit",
     "claim": "benefit reimburse invoice receipt submit",
+    # Indonesian and Malay. Expansion was English only, so a question
+    # in another language scored at the junk baseline even though
+    # retrieval found the right section.
+    "gigi": "dental dentist optical ancillary extras excluded",
+    "dokter": "doctor general practitioner GP medical services MBS",
+    "obat": "prescription medicines pharmaceutical",
+    "kacamata": "optical glasses items ancillary excluded",
+    "biaya": "cost out-of-pocket expense benefit fee",
+    "klaim": "claim benefit reimburse receipt",
+    "menunggu": "waiting period",
+    "jiwa": "mental health psychology psychiatric counselling",
+    "mental": "mental health psychology psychiatric counselling",
 }
 
 
