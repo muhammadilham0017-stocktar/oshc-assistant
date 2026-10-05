@@ -6,3 +6,4 @@ pdfplumber>=0.11
 numpy>=1.26
 openai>=1.40
 python-dotenv>=1.0
+scikit-learn>=1.4
