@@ -46,15 +46,47 @@ EXCLUSIONS = "Benefit exclusions"
 
 
 def extract_pages(pdf_path):
-    """Returns [(page_number, text)]. Tables are extracted separately so
-    row and column relationships survive."""
+    """Returns [(page_number, text)].
+
+    The Member Guide is a two column layout. Reading the page as one block
+    interleaves the columns, producing text like "Dental surgery in a
+    Waiting period Service hospital" where a table header has been spliced
+    into the middle of a sentence. Splitting the page down the middle and
+    reading each column separately fixes it.
+
+    Contents pages are skipped. They are page number lists, and read as
+    prose they produce nonsense that still scores well on retrieval."""
     pages, tables = [], []
     with pdfplumber.open(pdf_path) as pdf:
         for i, page in enumerate(pdf.pages, start=1):
-            pages.append((i, page.extract_text() or ""))
+            mid = page.width / 2
+            left = page.crop((0, 0, mid, page.height)).extract_text() or ""
+            right = page.crop((mid, 0, page.width, page.height)).extract_text() or ""
+            single = page.extract_text() or ""
+
+            # Two columns only if both halves carry real text. A full width
+            # page puts almost everything in one half.
+            if len(left.split()) > 25 and len(right.split()) > 25:
+                text = left + "\n" + right
+            else:
+                text = single
+
+            if _is_contents(text):
+                continue
+
+            pages.append((i, text))
             for t in page.extract_tables():
                 tables.append((i, t))
     return pages, tables
+
+
+def _is_contents(text):
+    """A contents page is mostly short lines ending in a page number."""
+    lines = [l.strip() for l in text.split("\n") if l.strip()]
+    if len(lines) < 8:
+        return False
+    numbered = sum(1 for l in lines if re.search(r"\s\d{1,3}$", l))
+    return numbered / len(lines) > 0.5
 
 
 def split_document(pages, product, effective):

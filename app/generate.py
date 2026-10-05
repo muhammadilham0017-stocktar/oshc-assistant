@@ -50,7 +50,9 @@ Define any policy term you have to use.
 End with one thing the student can do next.
 Use only the passages below. Nothing else.
 Never state a number that is not written in the passages.
-Do not use emoji. Be warm and direct, not casual."""
+Do not use emoji. Be warm and direct, not casual.
+If you give a phone number, give the Student Health and Support Line
+on 1800 887 283. Do not give the general enquiries number."""
 
 
 def build_prompt(question, passages, member, stricter=False):

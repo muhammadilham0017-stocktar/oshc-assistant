@@ -263,6 +263,15 @@ class Retriever:
     def search(self, question, product, k=3, pool=20, expand_query=True):
         """Product filter runs BEFORE search, not after. Without it an
         Essentials member can receive Comprehensive limits."""
+        # Correct typos first, then expand. A student types
+        # 'psychologisss' and the model would understand it, but the
+        # model never sees the question unless retrieval finds a
+        # chunk. So the correction has to happen before the search.
+        try:
+            from app.spelling import correct
+            question = correct(question)
+        except Exception:
+            pass
         if expand_query:
             from app.synonyms import expand
             question = expand(question)
@@ -329,9 +338,44 @@ def numbers_supported(answer, passages):
     return (len(bad) == 0), bad
 
 
+def _syllables(word):
+    """Vowel group counting. textstat needs an NLTK corpus it cannot always
+    download, and on Streamlit Cloud the download fails silently, which
+    turned the readability gate off entirely. This has no dependencies."""
+    w = re.sub(r"[^a-z]", "", word.lower())
+    if not w:
+        return 0
+    groups = re.findall(r"[aeiouy]+", w)
+    n = len(groups)
+    if w.endswith("e") and not w.endswith(("le", "ee", "ye")) and n > 1:
+        n -= 1
+    return max(1, n)
+
+
+def _syllables(word):
+    """Vowel group counting, no dependencies.
+
+    textstat needs an NLTK corpus that cannot always be downloaded, and on
+    Streamlit Cloud the download fails on a certificate error. That turned
+    the readability gate off completely without any visible sign."""
+    w = re.sub(r"[^a-z]", "", word.lower())
+    if not w:
+        return 0
+    n = len(re.findall(r"[aeiouy]+", w))
+    if w.endswith("e") and not w.endswith(("le", "ee", "ye")) and n > 1:
+        n -= 1
+    return max(1, n)
+
+
 def readable(answer, target=9):
-    """Year 7 is the Style Manual recommendation. We gate at 9 to leave
-    room for unavoidable policy terms."""
-    import textstat
-    grade = textstat.flesch_kincaid_grade(answer)
+    """Flesch-Kincaid grade. The Australian Government Style Manual
+    recommends Year 7 for public facing content. We gate at 9 to leave room
+    for policy terms that cannot be avoided."""
+    sentences = [x for x in re.split(r"[.!?]+", answer) if x.strip()]
+    words = re.findall(r"[A-Za-z']+", answer)
+    if not sentences or not words:
+        return False, None
+    grade = (0.39 * len(words) / len(sentences)
+             + 11.8 * sum(_syllables(w) for w in words) / len(words)
+             - 15.59)
     return (grade <= target), round(grade, 1)
