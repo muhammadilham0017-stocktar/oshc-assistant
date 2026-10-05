@@ -21,7 +21,8 @@ from pathlib import Path
 import streamlit as st
 
 from app.pipeline import (Retriever, safety_gate, GATE_RESPONSE, NURSE_LINE,
-                          crisis_check, CRISIS_RESPONSE, EMERGENCY_RESPONSE)
+                          crisis_check, CRISIS_RESPONSE, EMERGENCY_RESPONSE,
+                          wellbeing_check, WELLBEING_RESPONSE)
 from app.generate import answer as generate_answer
 
 DB = Path("data/interactions.db")
