@@ -42,6 +42,13 @@ def init_db():
     return con
 
 
+
+def md_safe(text):
+    """Streamlit renders text between two dollar signs as LaTeX, which
+    turns '$100 ... $200' into a formula. Escaping them keeps benefit
+    amounts readable."""
+    return text.replace("$", "\\$")
+
 def log(topic, confidence, page, source, routed=0):
     """Matched topic and confidence only. Never the question text, never a
     member identity. Supports Australian Privacy Principle 2."""
@@ -70,22 +77,22 @@ def ask(question, product, page_name):
     tier = crisis_check(question)
     if tier == "crisis":
         log("crisis", 1.0, page_name, "lifeline", routed=1)
-        st.error(CRISIS_RESPONSE)
+        st.error(md_safe(CRISIS_RESPONSE))
         return
     if tier == "emergency":
         log("emergency", 1.0, page_name, "triple_zero", routed=1)
-        st.error(EMERGENCY_RESPONSE)
+        st.error(md_safe(EMERGENCY_RESPONSE))
         return
 
     if wellbeing_check(question):
         log("wellbeing", 1.0, page_name, "support_line", routed=1)
-        st.info(WELLBEING_RESPONSE)
+        st.info(md_safe(WELLBEING_RESPONSE))
         return
 
     blocked, term = safety_gate(question)
     if blocked:
         log("clinical", 1.0, page_name, "nurse_line", routed=1)
-        st.error(GATE_RESPONSE)
+        st.error(md_safe(GATE_RESPONSE))
         return
 
     r = load_retriever()
@@ -123,7 +130,7 @@ def ask(question, product, page_name):
                                           fallback=approved)
     log(topic, confidence, page_name, source)
 
-    st.success(text)
+    st.success(md_safe(text))
     with st.expander("Where this came from"):
         for p in passages:
             st.caption(f"{p['section']}, page {p['page']} "
