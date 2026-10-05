@@ -20,7 +20,8 @@ from pathlib import Path
 
 import streamlit as st
 
-from app.pipeline import Retriever, safety_gate, GATE_RESPONSE, NURSE_LINE
+from app.pipeline import (Retriever, safety_gate, GATE_RESPONSE, NURSE_LINE,
+                          crisis_check, CRISIS_RESPONSE, EMERGENCY_RESPONSE)
 from app.generate import answer as generate_answer
 
 DB = Path("data/interactions.db")
@@ -64,6 +65,22 @@ def load_approved():
 
 def ask(question, product, page_name):
     """The runtime path. Gate first, always."""
+    # Tier 1 runs before the wellbeing and clinical checks.
+    tier = crisis_check(question)
+    if tier == "crisis":
+        log("crisis", 1.0, page_name, "lifeline", routed=1)
+        st.error(CRISIS_RESPONSE)
+        return
+    if tier == "emergency":
+        log("emergency", 1.0, page_name, "triple_zero", routed=1)
+        st.error(EMERGENCY_RESPONSE)
+        return
+
+    if wellbeing_check(question):
+        log("wellbeing", 1.0, page_name, "support_line", routed=1)
+        st.info(WELLBEING_RESPONSE)
+        return
+
     blocked, term = safety_gate(question)
     if blocked:
         log("clinical", 1.0, page_name, "nurse_line", routed=1)

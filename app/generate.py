@@ -9,6 +9,19 @@ the human approved answer for the matched topic, which is also what
 happens if generation fails on the day.
 """
 import os
+
+def _secret(name, default=None):
+    """Streamlit Cloud supplies secrets through st.secrets. Locally the
+    environment or a .env file supplies them. Try both."""
+    v = os.getenv(name)
+    if v:
+        return v
+    try:
+        import streamlit as st
+        return st.secrets.get(name, default)
+    except Exception:
+        return default
+
 from dotenv import load_dotenv
 load_dotenv()
 import re
@@ -57,10 +70,10 @@ def call_model(prompt):
     """Groq. Swap the base_url and model for any OpenAI-compatible service,
     including an Australian region deployment for production."""
     from openai import OpenAI
-    client = OpenAI(api_key=os.environ["GROQ_API_KEY"],
+    client = OpenAI(api_key=_secret("GROQ_API_KEY"),
                     base_url="https://api.groq.com/openai/v1")
     resp = client.chat.completions.create(
-        model=os.getenv("MODEL", "openai/gpt-oss-120b"),
+        model=_secret("MODEL", "llama-3.3-70b-versatile"),
         messages=[{"role": "user", "content": prompt}],
         temperature=0.2,
         max_tokens=1200,
@@ -80,7 +93,7 @@ def answer(question, passages, member, fallback=None):
     """Returns (text, trace, source). source is 'generated' or 'fallback'."""
     trace = []
 
-    if not os.getenv("GROQ_API_KEY"):
+    if not _secret("GROQ_API_KEY"):
         return (fallback or _no_answer()), trace, "fallback"
 
     for attempt in range(1, MAX_ATTEMPTS + 1):

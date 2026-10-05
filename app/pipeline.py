@@ -19,7 +19,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 # a nurse costs one phone call, missing a crisis message costs far more.
 CLINICAL = [
     "hurt", "hurts", "hurting", "pain", "painful", "ache", "aching", "sore",
-    "bleeding", "blood", "fever", "rash", "lump", "swollen", "swelling",
+    "bleeding", "blood in", "fever", "rash", "lump", "swollen", "swelling",
     "dizzy", "vomit", "nausea", "chest", "breathe", "breathing", "cough",
     "infection", "infected", "injury", "injured", "broken", "fracture",
     "sick", "ill", "unwell", "symptom", "symptoms", "diagnos", "diagnosed",
@@ -54,6 +54,76 @@ COVERAGE_INTENT = [
     "b\u1ea3o hi\u1ec3m", "chi ph\u00ed",
 ]
 
+
+# ------------------------------------------------------------------ TIER 1
+# Immediate danger. Checked before anything else and before the coverage
+# override. Nothing is retrieved, generated, stored or logged as text.
+CRISIS = [
+    # self harm, English
+    "kill myself", "killing myself", "end my life", "ending my life",
+    "want to die", "wanna die", "dont want to live", "don't want to live",
+    "better off dead", "take my own life", "suicide", "suicidal",
+    "self harm", "hurt myself", "harm myself", "cut myself",
+    "overdose", "took too many", "no reason to live",
+    "cant go on", "can't go on",
+    # self harm, other languages
+    "ingin mati", "mau mati", "bunuh diri", "akhiri hidup",
+    "\u6211\u60f3\u6b7b", "\u81ea\u6740", "\u4e0d\u60f3\u6d3b",
+    "mu\u1ed1n ch\u1ebft", "t\u1ef1 t\u1eed",
+]
+
+EMERGENCY = [
+    "cant breathe", "can't breathe", "cannot breathe", "trouble breathing",
+    "not breathing", "chest pain", "chest is tight", "chest tight",
+    "heart attack", "stroke", "unconscious", "passed out",
+    "wont wake up", "won't wake up", "seizure", "choking",
+    "severe bleeding", "bleeding a lot", "anaphyla", "allergic reaction",
+    "call an ambulance",
+    "sesak napas", "sesak nafas", "nyeri dada", "serangan jantung", "pingsan",
+    "\u547c\u5438\u56f0\u96be", "\u80f8\u75db", "\u660f\u8ff7",
+    "kh\u00f3 th\u1edf", "\u0111au ng\u1ef1c",
+]
+
+LIFELINE = "13 11 14"
+TRIPLE_ZERO = "000"
+
+CRISIS_RESPONSE = (
+    "I am not the right help for this, and I want you to talk to someone "
+    f"who is. Lifeline is free, 24 hours, on {LIFELINE}. If you are in "
+    f"immediate danger call {TRIPLE_ZERO}. Your cover also includes free "
+    "counselling on 1800 887 283, in around 160 languages. "
+    "Nothing you typed was saved."
+)
+
+EMERGENCY_RESPONSE = (
+    f"This sounds like an emergency. Call {TRIPLE_ZERO} now. Do not drive "
+    "yourself. Emergency ambulance is fully covered, with no limit and no "
+    "waiting period. Nothing you typed was saved."
+)
+
+
+def _match(terms, q):
+    """Word boundaries for Latin scripts, substring for scripts without
+    spaces. Same rule as the clinical gate."""
+    for w in terms:
+        if not w.isascii():
+            if w in q:
+                return w
+        elif re.search(rf"\b{re.escape(w)}\b", q):
+            return w
+    return None
+
+
+def crisis_check(question):
+    """Returns 'crisis', 'emergency' or None. Runs first, always."""
+    q = question.lower()
+    if _match(CRISIS, q):
+        return "crisis"
+    if _match(EMERGENCY, q):
+        return "emergency"
+    return None
+
+
 NURSE_LINE = "1800 887 283"
 
 GATE_RESPONSE = (
@@ -61,6 +131,50 @@ GATE_RESPONSE = (
     f"Student Health and Support Line on {NURSE_LINE}. A registered nurse "
     "answers, 24 hours, in around 160 languages. Your message was not saved."
 )
+
+
+
+# Wellbeing is not a clinical symptom and needs a warmer response.
+# Loneliness and homesickness are common among international students,
+# and a generic refusal is the wrong answer to them.
+WELLBEING = [
+    "lonely", "alone", "isolated", "homesick", "miss home", "miss my family",
+    "no friends", "sad", "stressed", "stress", "overwhelmed", "struggling",
+    "been stressed", "feeling stressed", "cant cope", "can't cope",
+    "panic attack", "anxiety attack", "breaking down", "hopeless",
+    "was assaulted", "been assaulted", "abused", "unsafe at home",
+    "kesepian", "sendiri", "rindu rumah", "sedih", "stres", "cemas",
+    "\u5b64\u72ec", "\u60f3\u5bb6", "\u96be\u8fc7", "\u538b\u529b",
+]
+
+WELLBEING_RESPONSE = (
+    "That sounds hard, and a lot of students feel this way, especially "
+    "early on. You can talk to a qualified counsellor any time, free, on "
+    "1800 887 283. It is open 24 hours and in around 160 languages. "
+    "Your message was not saved."
+)
+
+
+def wellbeing_check(question):
+    """Runs after the crisis tier and before the clinical gate.
+
+    A coverage question that happens to name a feeling is not a wellbeing
+    disclosure. "OSHC help with stress" asks what the policy pays for.
+    "I have been stressed since arriving" is the student telling us
+    something. First person phrasing decides which it is."""
+    q = question.lower()
+    first = bool(re.search(r"\b(i |i'm|im |my |me\b)", q)) or "saya " in q or "\u6211" in q
+    if not first and any(c in q for c in
+            ["cover", "covered", "claim", "benefit", "pay", "include",
+             "oshc", "policy", "limit", "tercover", "ditanggung"]):
+        return None
+    for w in WELLBEING:
+        if not w.isascii():
+            if w in q:
+                return w
+        elif re.search(rf"\b{re.escape(w)}\b", q):
+            return w
+    return None
 
 
 def safety_gate(question):

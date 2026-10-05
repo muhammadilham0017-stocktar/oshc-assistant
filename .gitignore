@@ -1,7 +1,21 @@
+# secrets, never commit
+.env
+.streamlit/secrets.toml
+
+# environment
 .venv/
-data/*.pdf
-data/vectors.npy
-data/interactions.db
+venv/
 __pycache__/
 *.pyc
-.env
+.DS_Store
+
+# source PDFs are Medibank's, do not redistribute
+data/*.pdf
+
+# runtime log, regenerates
+data/interactions.db
+
+# NOTE: data/chunks.json and data/vectors.npy ARE committed on purpose.
+# Streamlit Cloud only runs the app, it cannot run the ingest scripts,
+# so the prebuilt index has to be in the repo or the app has nothing
+# to search. Rebuild them locally and commit after any policy update.
