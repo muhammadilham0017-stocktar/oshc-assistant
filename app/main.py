@@ -182,12 +182,6 @@ def init_db():
 
 
 
-def md_safe(text):
-    """Streamlit renders text between two dollar signs as LaTeX, which
-    turns '$100 ... $200' into a formula. Escaping them keeps benefit
-    amounts readable."""
-    return text.replace("$", "\\$")
-
 def log(topic, confidence, page, source, routed=0):
     """Matched topic and confidence only. Never the question text, never a
     member identity. Supports Australian Privacy Principle 2."""

@@ -339,20 +339,6 @@ def numbers_supported(answer, passages):
 
 
 def _syllables(word):
-    """Vowel group counting. textstat needs an NLTK corpus it cannot always
-    download, and on Streamlit Cloud the download fails silently, which
-    turned the readability gate off entirely. This has no dependencies."""
-    w = re.sub(r"[^a-z]", "", word.lower())
-    if not w:
-        return 0
-    groups = re.findall(r"[aeiouy]+", w)
-    n = len(groups)
-    if w.endswith("e") and not w.endswith(("le", "ee", "ye")) and n > 1:
-        n -= 1
-    return max(1, n)
-
-
-def _syllables(word):
     """Vowel group counting, no dependencies.
 
     textstat needs an NLTK corpus that cannot always be downloaded, and on
